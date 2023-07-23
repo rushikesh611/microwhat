@@ -6,6 +6,7 @@ import com.microwhat.orderservice.dto.OrderRequest;
 import com.microwhat.orderservice.models.Order;
 import com.microwhat.orderservice.models.OrderLineItems;
 import com.microwhat.orderservice.repository.OrderRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +24,20 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
 
-    public void placeOrder(OrderRequest orderRequest) {
+    public String placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
 
-        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList().stream().map(this::mapToDto)
+        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
+                .stream()
+                .map(this::mapToDto)
                 .toList();
 
         order.setOrderLineItemsList(orderLineItems);
 
-        List<String> skuCodes = order.getOrderLineItemsList().stream().map(OrderLineItems::getSkuCode).toList();
+        List<String> skuCodes = order.getOrderLineItemsList().stream()
+                .map(OrderLineItems::getSkuCode)
+                .toList();
 
         // call inventory service to check if the items are available
         InventoryResponse[] inventoryResponsArray = webClientBuilder.build().get()
@@ -44,8 +49,9 @@ public class OrderService {
         boolean allProductsInStock = Arrays.stream(inventoryResponsArray)
                 .allMatch(InventoryResponse::isInStock);
 
-        if(allProductsInStock){
+        if (allProductsInStock) {
             orderRepository.save(order);
+            return "Order placed successfully";
         } else {
             throw new IllegalArgumentException("Product is not in stock, please try again later");
         }
