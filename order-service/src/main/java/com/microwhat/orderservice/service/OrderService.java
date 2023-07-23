@@ -1,5 +1,13 @@
 package com.microwhat.orderservice.service;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import com.microwhat.orderservice.dto.InventoryResponse;
 import com.microwhat.orderservice.dto.OrderLineItemsDto;
 import com.microwhat.orderservice.dto.OrderRequest;
@@ -8,13 +16,6 @@ import com.microwhat.orderservice.models.OrderLineItems;
 import com.microwhat.orderservice.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
